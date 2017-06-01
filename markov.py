@@ -58,27 +58,43 @@ def make_text(chains):
         words.append(word)
         key = (key[1], word)
 
-        if len(" ".join(words)) in range(100, 140):
+        if len(" ".join(words)) in range(100, 125):
             break
 
     return " ".join(words)
 
-def tweet(any_text):
+
+def tweet(chains):
+    # Improve in future to give hashtag a character limit
+    
     # Use Python os.environ to get at environmental variables
     # Note: you must run `source secrets.sh` before running this file
     # to make sure these environmental variables are set.
-    
+
     api = twitter.Api(
         consumer_key=os.environ['TWITTER_CONSUMER_KEY'],
         consumer_secret=os.environ['TWITTER_CONSUMER_SECRET'],
         access_token_key=os.environ['TWITTER_ACCESS_TOKEN_KEY'],
         access_token_secret=os.environ['TWITTER_ACCESS_TOKEN_SECRET'])
 
-    print api.VerifyCredentials()
+    while True:
 
-    status = api.PostUpdate(any_text)
+        generated_tweet = make_text(chains) + " #aug17kat"
 
-    print status.text
+        # print api.VerifyCredentials()
+
+        # Where tweet gets published
+        status = api.PostUpdate(generated_tweet)
+        print status.text
+
+        tweet_again = raw_input("\nWould you like to tweet again? y/n: ")
+
+        if tweet_again.lower() == "y":
+            continue
+
+        else:
+            break
+
 
 # Get the filenames from the user through a command line prompt, ex:
 # python markov.py green-eggs.txt shakespeare.txt
@@ -91,9 +107,12 @@ text = open_and_read_file(filenames)
 chains = make_chains(text)
 
 # Make text using dictionary
-generated_tweet = make_text(chains)
+# generated_tweet = make_text(chains)
 
 # Your task is to write a new function tweet, that will take chains as input
 # tweet(chains)
 
-tweet(generated_tweet)
+tweet(chains)
+
+# Alter original markov_chains file to make the tweets better (poctuation, 
+# capitalization, etc, etc)
